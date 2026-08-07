@@ -55,6 +55,25 @@ si el path ya tiene una estructura parcial o distinta — no asumir que siempre 
 
 Origen del requisito de proyectos: conversación con Oscar, 2026-08-07.
 
+Una sesión de mesa real puede durar varias horas — `Pipeline de transcripción.md` ya elige el
+modelo `small` pensando en eso, pero el orquestador es donde eso se vuelve un problema
+concreto de subida y de tiempo de proceso, no solo de calidad del modelo. El diseño de esta
+tarea tiene que responder, para un audio del orden de 2-3 horas (WAV 16kHz mono, ~300-350
+MB):
+
+- **Tamaño de subida**: los límites por defecto de Django (`DATA_UPLOAD_MAX_MEMORY_SIZE` y
+  afines) no alcanzan para un archivo de ese tamaño — hay que subirlos explícitamente y
+  decidir hasta qué tamaño se acepta.
+- **Síncrono vs. background**: si "subir → transcribir → raw listo" corre dentro de una sola
+  request HTTP, una transcripción de varias horas puede exceder el timeout del servidor. Si
+  no hay una razón fuerte para mantenerlo síncrono, el diseño debería contemplar un
+  procesamiento en background (Celery, RQ, o algo más simple si el prototipo no lo justifica
+  todavía) — decidir esto es parte de esta tarea, no un supuesto a asumir en silencio.
+- **Robustez de la subida**: una subida de 300+ MB por HTTP, en la red de una mesa de rol, es
+  candidata realista a cortarse a mitad de camino. El diseño debe decidir si hace falta algo
+  más que una subida simple (reintentos, subida por partes) o si se acepta el riesgo para el
+  prototipo y se revisa después.
+
 ## Referencias
 - ObsidianRPG_Obsidian/diseno-del-sistema/Pipeline de transcripción.md
 - automatic-rpg-note-src (repo aparte; el proyecto Django de Tema #2 vive ahí, esta tarea
