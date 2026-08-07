@@ -181,3 +181,21 @@ duplicado → rechaza; existente con estructura real → abre). `Orquestador de
 transcripción.md` actualizado con la tabla de vistas y la verificación.
 
 Origen: implementación con Claude, 2026-08-07.
+
+## Adenda 2 — 2026-08-07
+
+Oscar pidió que todo el código del proyecto esté en inglés (identificadores, comentarios,
+docstrings, nombres de app/modelos/vistas/urls/templates), dejando en español solo el texto
+que el usuario lee corriendo la app. Se renombró la app `orquestador` → `orchestrator` y
+todos sus identificadores (`ProyectoCampana`→`CampaignProject`,
+`TrabajoTranscripcion`→`TranscriptionJob`, `AudioSubido`→`UploadedAudio`, campos, vistas,
+urls, templates, `core/transcripcion.py`→`core/transcription.py`), regenerando la migración
+inicial (sin datos reales que migrar todavía). El texto visible en la UI (labels, botones,
+mensajes de error, help de `check_transcription`) se dejó igual, en español. Se agregó la
+convención como regla en `CLAUDE.md` sección 5 para que no se pierda hacia adelante.
+
+Repetida la batería completa de pruebas end-to-end (crear/abrir proyecto, subir y
+transcribir, duplicados, validación de ruta existente) contra el código renombrado — mismos
+resultados que antes del rename.
+
+Origen: implementación con Claude, 2026-08-07.
