@@ -1,14 +1,14 @@
 ---
 id: "TSK-2"
 titulo: "Tema #2 — Base del proyecto Django"
-estado: "En curso"
+estado: "Listo"
 tipo: "Feature"
 disciplina: "Arquitectura del sistema"
 prioridad: "P1 - Alta"
 hito: "Prototipo"
 segmentos_a_actualizar: ["Diseño del sistema", "Documentación técnica"]
 segmentos_actualizados: true
-definicion_de_hecho: false
+definicion_de_hecho: true
 documentacion_a_actualizar: ["[[Proyecto Django]]"]
 diseno_de_referencia: ["[[Arquitectura del proyecto Django]]"]
 costo_asociado: []
@@ -30,13 +30,18 @@ definir al ejecutar la tarea), que corre localmente con el servidor de desarroll
 errores — sin lógica de negocio todavía: ni instalación de dependencias de transcripción
 ([[Tema #3 — Instalación de dependencias de transcripción en Django]]), ni orquestación
 ([[Tema #4 — Orquestador y subida de audios para transcripción]]), ambas construyen encima
-de esta base. `Proyecto Django` documenta cómo levantarlo y correrlo. `Arquitectura del
-proyecto Django` deja registrada la elección de Django como stack — resuelve la decisión que
-tenía pendiente [[Tema #4 — Orquestador y subida de audios para transcripción]] entre HTML
-simple sin framework y Django.
+de esta base. Las dependencias del proyecto se gestionan con `uv` en vez de `pip`/`venv`
+sueltos. En la raíz del repo existe un `Makefile` con los targets que resumen los comandos
+que normalmente hacen falta para instalar, migrar y correr el proyecto (`make install`,
+`make run`, etc.), en vez de tener que escribir el comando completo de `uv` cada vez.
+`Proyecto Django` documenta cómo levantarlo y correrlo, con y sin `make`. `Arquitectura del
+proyecto Django` deja registrada la elección de Django como stack y de `uv` como gestor de
+dependencias — resuelve la decisión que tenía pendiente [[Tema #4 — Orquestador y subida de
+audios para transcripción]] entre HTML simple sin framework y Django.
 
 ## Referencias
-- src/ (carpeta nueva, todavía no existe)
+- src/ (proyecto Django)
+- Makefile (raíz del repo)
 
 Origen: conversación con Oscar, 2026-08-07.
 
@@ -84,3 +89,33 @@ es [[Tema #3 — Instalación de dependencias de transcripción en Django]] y [[
 Orquestador y subida de audios para transcripción]].
 
 Origen: implementación con Claude, 2026-08-07.
+
+## Ampliación de alcance y verificación
+
+Oscar amplió el `## Resultado esperado` de esta tarea: el proyecto debía gestionar
+dependencias con `uv` en vez de `pip`/`venv` sueltos, y la raíz del repo debía tener un
+`Makefile` con atajos para los comandos de uso habitual.
+
+Trabajo hecho:
+- `src/requirements.txt` reemplazado por `src/pyproject.toml` (dependencias) + `src/uv.lock`
+  (versionado, para instalaciones reproducibles).
+- `Makefile` en la raíz con los targets `install`, `migrate`, `makemigrations`, `run`,
+  `shell`, todos delegando en `uv run --directory src ...` (no `--project`: no cambia el
+  directorio de trabajo del subproceso, y `manage.py` es una ruta relativa a `src/`).
+
+Esto resolvió el bloqueante real que había dejado abierta esta tarea: `uv` se instala sin
+`sudo` (script oficial, a `~/.local/bin`), así que en este mismo sandbox se pudo verificar de
+punta a punta lo que antes no se pudo con `pip`/`venv`:
+- `make install` → `uv sync --directory src` instaló Django 5.2.17 en `src/.venv`.
+- `make migrate` → aplicó las migraciones iniciales sin errores.
+- `make run` → el servidor de desarrollo respondió `200` en `http://127.0.0.1:8000/`.
+
+`make` en sí no se pudo instalar de forma persistente en este sandbox (requiere `apt install
+make`, y no hay `sudo`) — se extrajo su paquete `.deb` a una ruta temporal fuera del repo
+solo para correr esta verificación puntual; en una máquina real se instala con el gestor de
+paquetes del sistema, sin nada especial. Con eso, el `## Resultado esperado` completo —
+incluyendo "corre localmente... sin errores" — queda verificado, no solo supuesto.
+
+`definicion_de_hecho` pasa a `true` y `estado` a `Listo`.
+
+Origen: conversación con Oscar, 2026-08-07.

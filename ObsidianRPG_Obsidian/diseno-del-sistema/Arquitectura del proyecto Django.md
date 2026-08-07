@@ -16,7 +16,9 @@ HTML aparte).
 
 ## Estructura
 
-Un único proyecto Django en `src/`, sin apps de negocio todavía:
+Un único proyecto Django, sin apps de negocio todavía. Vive en su propio repositorio,
+`automatic-rpg-note-src` (ver CLAUDE.md sección 2 de `automatic-rpg-note`, el repo de
+especificación) — no dentro del repo del vault:
 
 - `config/` — paquete de settings del proyecto (`settings.py`, `urls.py`, `wsgi.py`,
   `asgi.py`). Se llama `config` y no por el nombre del sistema, para no acoplar el paquete de
@@ -28,6 +30,14 @@ Un único proyecto Django en `src/`, sin apps de negocio todavía:
   propias si el alcance lo justifica al ejecutarlas.
 - Base de datos: SQLite por defecto (`db.sqlite3`, no versionado) — suficiente para el
   prototipo; no hay requisito todavía que empuje a otro motor.
+- Dependencias: [uv](https://docs.astral.sh/uv/) en vez de `pip`/`venv` sueltos —
+  `pyproject.toml` declara las dependencias, `uv.lock` las fija para instalaciones
+  reproducibles. Elegido porque no requiere privilegios de administrador para instalarse (a
+  diferencia de `python3-pip`/`python3-venv` a nivel de sistema) y resuelve entorno virtual +
+  instalación en un solo paso.
+- Atajos de comandos: un `Makefile` en la raíz de `automatic-rpg-note-src` (`make install`,
+  `make migrate`, `make run`, `make makemigrations`, `make shell`) delega en `uv run`, para no
+  tener que escribir el comando completo cada vez.
 
 ## Fuera de alcance de esta pieza
 

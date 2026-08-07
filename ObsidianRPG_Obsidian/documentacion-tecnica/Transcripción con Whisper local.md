@@ -2,7 +2,7 @@
 documento: "Transcripción con Whisper local"
 area: "Transcripción (Whisper)"
 estado: "Vigente"
-ruta_en_el_repo: ""
+ruta_en_el_repo: "core/management/commands/check_transcription.py"
 herramientas: ["Whisper (local)", "Python"]
 ultima_revision: "2026-08-07"
 ---
@@ -13,19 +13,39 @@ Describe cómo transcribir el audio de una sesión de mesa con Whisper local. El
 de estas decisiones vive en `diseno-del-sistema/Pipeline de transcripción.md` — esta nota es
 el reflejo de implementación; si algún día divergen, gana esta y se corrige la de diseño.
 
-`ruta_en_el_repo` queda vacía porque la instalación automatizada todavía no existe — la crea
-[[Tema #3 — Instalación de dependencias de transcripción en Django]], integrada en el
-proyecto Django de [[Tema #2 — Base del proyecto Django]]. Cuando exista, se actualiza este
-campo.
+El código real vive en el repo `automatic-rpg-note-src` (ver CLAUDE.md sección 2) — las
+rutas de esta nota son relativas a ese repo, no a `automatic-rpg-note`.
 
 ## Instalación
 
-1. Python 3.9 o superior instalado.
-2. `pip install faster-whisper`.
-3. Descargar (o dejar que se descargue en el primer uso) el modelo `small`.
+`faster-whisper` es una dependencia declarada en `pyproject.toml` (fijada en `uv.lock`) del
+proyecto Django de [[Tema #2 — Base del proyecto Django]] — se instala junto con el resto del
+proyecto (`make install` / `uv sync`), sin paso manual aparte.
 
 No hace falta compilar nada ni instalar FFmpeg aparte: faster-whisper decodifica audio con
 PyAV, que trae sus propias librerías de FFmpeg.
+
+## Cómo se dispara desde Django
+
+[[Tema #3 — Instalación de dependencias de transcripción en Django]] agrega el comando de
+gestión `check_transcription` a la app `core`:
+
+```
+uv run python manage.py check_transcription
+```
+
+El comando instancia el modelo `small` de faster-whisper — lo que dispara la descarga desde
+Hugging Face Hub si todavía no está en caché local — intentando primero GPU
+(`device="cuda", compute_type="float16"`) y cayendo a CPU (`device="cpu",
+compute_type="int8"`) si CUDA no está disponible, sin cambiar de código. Al terminar, imprime
+en qué dispositivo quedó listo el modelo. Esta tarea solo deja el modelo instalado y
+verificado; no transcribe un audio real — eso es alcance de [[Tema #4 — Orquestador y subida
+de audios para transcripción]].
+
+**Verificado en esta implementación**: `check_transcription` se corrió en el sandbox (GPU
+NVIDIA con CUDA disponible) y confirmó `Modelo 'small' listo para transcribir — GPU (cuda,
+float16).`. No se verificó el camino de repliegue a CPU (la máquina de verificación sí tenía
+GPU) — queda sin probar hasta que se corra en una máquina sin CUDA.
 
 ## GPU
 

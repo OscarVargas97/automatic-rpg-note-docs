@@ -10,4 +10,5 @@ ultima_revision: "2026-08-07"
 # Orquestador de transcripción
 
 Nace vacía — [[Tema #4 — Orquestador y subida de audios para transcripción]] la completa
-cuando existan las vistas del orquestador real en `src/`.
+cuando existan las vistas del orquestador real, en el repo `automatic-rpg-note-src` (ver
+CLAUDE.md sección 2).

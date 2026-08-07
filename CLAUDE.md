@@ -20,7 +20,8 @@ juego termine una sesión y tenga el lore actualizado sin transcribir ni ordenar
 - **Transcriptor elegido:** Whisper local (whisper.cpp / faster-whisper) — ver la fila del
   7 de agosto de 2026 en el Log de decisiones de `ObsidianRPG_Obsidian/meta/contexto-para-ia.md`.
   Sin costo por uso, sin depender de conexión durante la sesión de mesa.
-- **Hito actual:** Especificación — todavía no existe código de implementación.
+- **Hito actual:** Prototipo — existe una primera implementación real (proyecto Django, base
+  de transcripción con Whisper local) en el repo de código, `automatic-rpg-note-src`.
 
 Tratar esto como desarrollo de software significa: las tareas de este proyecto no son
 "escribir un párrafo de documentación", son unidades de trabajo con alcance, segmentos que
@@ -32,13 +33,23 @@ producto sea un documento de arquitectura o un esquema de vault.
 ## 2. Territorio: vault vs. código
 
 `ObsidianRPG_Obsidian/` es el vault de Obsidian versionado en este repo — la especificación,
-las tareas, el lore ilustrativo. `src/` es el código de implementación real del sistema
-(scripts de transcripción, pipeline de ingesta, etc.) — decisión tomada el 2026-08-07, ver
-el Log de decisiones en `ObsidianRPG_Obsidian/meta/contexto-para-ia.md`. Ambos viven en este
-mismo repositorio, sin split de repos por ahora.
+las tareas, el lore ilustrativo. Este repo (`automatic-rpg-note`) **no contiene código de
+implementación**: el proyecto Django, el pipeline de transcripción, y en general cualquier
+código real del sistema vive en un repositorio hermano, `automatic-rpg-note-src`
+(https://github.com/OscarVargas97/automatic-rpg-note-src), con su propio historial y sus
+propias ramas.
 
-Si encuentras código de implementación real fuera de `src/` (no snippets ilustrativos dentro
-de un documento de especificación), algo se saltó el proceso — repórtalo antes de seguir.
+Localmente, ambos repos viven como carpetas hermanas bajo un mismo directorio contenedor
+(`automatic-rpg-note/ObsidianRPG/` y `automatic-rpg-note/automatic-rpg-note-src/`), pero ese
+directorio contenedor **no es un repositorio git** — cada carpeta se versiona por separado.
+Esta es la decisión revisada el 2026-08-07 (reemplaza la de "un solo repo" del mismo día): un
+solo repo hacía que cambiar de rama o rebasear el código moviera también las notas del vault
+que Obsidian tiene abiertas. Ver el Log de decisiones en
+`ObsidianRPG_Obsidian/meta/contexto-para-ia.md`.
+
+Si encuentras código de implementación real dentro de este repo (no snippets ilustrativos
+dentro de un documento de especificación), algo se saltó el proceso — repórtalo antes de
+seguir. El código real se revisa y se trabaja en `automatic-rpg-note-src`, no aquí.
 
 ---
 
@@ -99,8 +110,8 @@ Reglas:
   revisar.
 - Ramas: `feature/TSK-12-slug`, `fix/TSK-12-slug` (mismo esquema que Jueguito).
 - Commit: `[área] verbo en imperativo` — `[esquema] añade campo ultima_mencion a Personajes`.
-- Este repo no es todavía un repositorio git — la primera tarea que lo necesite pide
-  `git init` en vez de asumirlo.
+- Este repo es independiente del de código (`automatic-rpg-note-src`, sección 2): cada uno
+  tiene su propio historial, remoto y ramas.
 
 ### Documentos
 
@@ -132,9 +143,8 @@ Reglas:
 - **No cambies el transcriptor elegido** (Whisper local) sin una fila en el Log de
   decisiones de `ObsidianRPG_Obsidian/meta/contexto-para-ia.md`.
 - **No promuevas una entrada de `diseno-del-sistema/` a `Canon`** sin la misma fila.
-- **No escribas código de implementación real del sistema** dentro de este repo sin que una
-  tarea lo declare explícitamente y sin haber resuelto primero la decisión pendiente de la
-  sección 2 (dónde vive el código).
+- **No escribas código de implementación real del sistema dentro de este repo.** Vive en
+  `automatic-rpg-note-src` (sección 2) — si una tarea necesita tocar código, se trabaja allá.
 - **No cierres una tarea** que tenga segmentos pendientes.
 
 ---

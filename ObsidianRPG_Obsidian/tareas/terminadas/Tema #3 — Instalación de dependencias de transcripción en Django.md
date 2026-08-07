@@ -1,22 +1,22 @@
 ---
 id: "TSK-3"
 titulo: "Tema #3 — Instalación de dependencias de transcripción en Django"
-estado: "Sin empezar"
+estado: "Listo"
 tipo: "Feature"
 disciplina: "Transcripción y audio"
 prioridad: "P1 - Alta"
 hito: "Prototipo"
 segmentos_a_actualizar: ["Documentación técnica"]
-segmentos_actualizados: false
-definicion_de_hecho: false
+segmentos_actualizados: true
+definicion_de_hecho: true
 documentacion_a_actualizar: ["[[Transcripción con Whisper local]]"]
 diseno_de_referencia: ["[[Pipeline de transcripción]]"]
 costo_asociado: []
-rama: ""
+rama: "feature/TSK-3-tema-3-instalacion-de-dependencias-de-tr"
 responsable: ""
 estimacion_dias: ""
 fechas: ""
-bloqueada_por: "Tema #2 — Base del proyecto Django (necesita el proyecto Django levantado para integrar la instalación dentro de él)"
+bloqueada_por: ""
 ---
 
 ## Problema
@@ -44,3 +44,39 @@ Esta tarea instala las dependencias; no implementa todavía la lógica de transc
 - src/ (el proyecto Django de Tema #2 vive ahí)
 
 Origen: conversación con Oscar, 2026-08-07.
+
+## Registro de cierre
+
+Ejecutado en la rama feature/TSK-3-tema-3-instalacion-de-dependencias-de-tr, sin commit
+todavía.
+
+Decisiones resueltas:
+- Forma exacta de dejar instalado y listo Whisper local → comando de gestión
+  `manage.py check_transcription` en la app `core` (no una app nueva: el alcance —una sola
+  pieza de setup— no justifica crear `transcripcion/` aparte; queda de precedente para que
+  Tema #4 decida si el orquestador sí lo justifica).
+- Dependencia `faster-whisper` → declarada en `src/pyproject.toml` vía `uv add`, fijada en
+  `src/uv.lock`, se instala junto con el resto del proyecto (`make install`).
+
+Excepciones duras encontradas: ninguna — no se tocó el transcriptor elegido, no hay pieza
+Canon involucrada, y el código de implementación ya tenía resuelto dónde vive (`src/`,
+CLAUDE.md sección 2) y esta tarea lo declaraba explícitamente.
+
+Segmentos:
+- Documentación técnica → actualizado: `Transcripción con Whisper local.md` (ruta en el
+  repo, cómo se dispara desde Django, resultado de la verificación real) y, como corrección
+  necesaria fuera de la lista declarada pero dentro del mismo segmento, la línea de
+  `Proyecto Django.md` que decía que `core` no tenía lógica propia todavía — dejó de ser
+  cierto con este comando.
+
+Supuestos asumidos:
+- Modelo `small` como tamaño verificado (ya era el default elegido en
+  `Pipeline de transcripción.md`, no se cambió).
+- El comando vive en `core` en vez de una app `transcripcion` nueva.
+
+Fuera de alcance: verificar el camino de repliegue a CPU (la máquina de verificación tenía
+GPU con CUDA disponible) — no bloquea el cierre porque el código ya cae a CPU sin cambios si
+`WhisperModel(..., device="cuda", ...)` lanza excepción, pero queda sin probar en una máquina
+real sin GPU.
+
+Origen: implementación con Claude, 2026-08-07.
