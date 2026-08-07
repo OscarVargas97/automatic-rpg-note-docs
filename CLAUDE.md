@@ -29,19 +29,16 @@ producto sea un documento de arquitectura o un esquema de vault.
 
 ---
 
-## 2. Una sola fuente de verdad, por ahora
+## 2. Territorio: vault vs. código
 
-Hoy no hay split entre código y vault: **todo vive en `ObsidianRPG_Obsidian/`**, el vault
-local de Obsidian versionado en este repo. No hay código de implementación del sistema
-todavía — ese trabajo es a propósito una fase posterior, fuera del alcance de este repo tal
-como está planteado hoy (ver sección 1).
+`ObsidianRPG_Obsidian/` es el vault de Obsidian versionado en este repo — la especificación,
+las tareas, el lore ilustrativo. `src/` es el código de implementación real del sistema
+(scripts de transcripción, pipeline de ingesta, etc.) — decisión tomada el 2026-08-07, ver
+el Log de decisiones en `ObsidianRPG_Obsidian/meta/contexto-para-ia.md`. Ambos viven en este
+mismo repositorio, sin split de repos por ahora.
 
-Cuando arranque la implementación (probablemente como un repo aparte, o como una carpeta
-nueva aquí — **decisión pendiente**, no la tomes por tu cuenta si aparece), esta sección se
-actualiza para declarar el territorio de cada fuente, siguiendo el mismo patrón que usa
-Jueguito entre su código y su vault. Hasta entonces, si encuentras código de implementación
-real (no snippets ilustrativos dentro de un documento) en este repo, algo se saltó el
-proceso — repórtalo antes de seguir.
+Si encuentras código de implementación real fuera de `src/` (no snippets ilustrativos dentro
+de un documento de especificación), algo se saltó el proceso — repórtalo antes de seguir.
 
 ---
 

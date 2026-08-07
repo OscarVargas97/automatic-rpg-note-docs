@@ -23,6 +23,14 @@ Cada fragmento de una transcripción cae en una de dos categorías:
 
 Ver `Pipeline de ingesta y enrutamiento.md` para la lógica paso a paso de esa decisión.
 
+## Carpeta `raws/`
+
+Junto a `campaña/`, en la raíz del vault: guarda la transcripción cruda (raw) de cada sesión,
+tal como la produce `Pipeline de transcripción.md`, antes de cualquier resumen o
+clasificación. Se escribe siempre, sin excepción — es el respaldo si el resto del pipeline se
+equivoca. Un archivo por sesión (o por audio de origen, si la sesión no llegó a unificarse
+todavía); `Partidas` enlaza al archivo correspondiente vía `transcripcion_fuente`.
+
 ## Convención común a todas las carpetas
 
 Igual que en `VAULT_MAP.md`: el nombre de archivo es el título, los wikilinks resuelven las
@@ -111,7 +119,7 @@ sesión.
 | `campaña` | nombre libre — el vault puede servir a más de una mesa |
 | `participantes` | array de texto |
 | `duracion_minutos` | opcional |
-| `transcripcion_fuente` | ruta al audio o al `.txt` crudo, opcional |
+| `transcripcion_fuente` | ruta al archivo en `raws/` con la transcripción cruda de esta sesión, opcional |
 
 Cuerpo:
 
@@ -124,8 +132,8 @@ Cuerpo:
 - `## Decisiones y cabos sueltos` — cosas dichas en mesa que hay que recordar y no encajan
   como campo de ninguna entidad (una promesa a un NPC, una regla acordada, algo pendiente
   para la próxima sesión).
-- `## Transcripción cruda` — opcional, enlace al archivo fuente. Nunca se borra aunque ya
-  esté resumida: es el respaldo si el resumen se equivocó.
+- `## Transcripción cruda` — opcional, enlace al archivo correspondiente en `raws/`. Nunca se
+  borra aunque ya esté resumida: es el respaldo si el resumen se equivocó.
 
 ## Qué no decide el sistema solo
 
