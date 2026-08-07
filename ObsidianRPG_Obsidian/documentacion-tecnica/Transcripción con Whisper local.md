@@ -13,9 +13,10 @@ Describe cómo transcribir el audio de una sesión de mesa con Whisper local. El
 de estas decisiones vive en `diseno-del-sistema/Pipeline de transcripción.md` — esta nota es
 el reflejo de implementación; si algún día divergen, gana esta y se corrige la de diseño.
 
-`ruta_en_el_repo` queda vacía porque el script que automatiza esta instalación todavía no
-existe — lo crea [[Tema #2 — Script de setup de transcripción]] en `src/`. Cuando exista, se
-actualiza este campo.
+`ruta_en_el_repo` queda vacía porque la instalación automatizada todavía no existe — la crea
+[[Tema #3 — Instalación de dependencias de transcripción en Django]], integrada en el
+proyecto Django de [[Tema #2 — Base del proyecto Django]]. Cuando exista, se actualiza este
+campo.
 
 ## Instalación
 

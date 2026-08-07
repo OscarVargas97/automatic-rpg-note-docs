@@ -9,5 +9,5 @@ ultima_revision: "2026-08-07"
 
 # Orquestador de transcripción
 
-Nace vacía — [[Tema #3 — Orquestador y subida de audios para transcripción]] la completa
-cuando exista la interfaz/orquestador real en `src/`.
+Nace vacía — [[Tema #4 — Orquestador y subida de audios para transcripción]] la completa
+cuando existan las vistas del orquestador real en `src/`.

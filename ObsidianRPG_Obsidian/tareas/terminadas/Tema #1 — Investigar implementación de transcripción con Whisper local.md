@@ -28,8 +28,8 @@ necesita instalado para que eso funcione en la máquina de quien corre la sesió
 `Pipeline de transcripción` y `Transcripción con Whisper local` describen: variante de
 Whisper elegida, modelo, requisitos de hardware/software, formato de audio de entrada y de
 texto de salida, y qué debe existir en la máquina para correr una transcripción —
-suficiente para que [[Tema #2 — Script de setup de transcripción]] sepa exactamente qué
-automatizar.
+suficiente para que [[Tema #3 — Instalación de dependencias de transcripción en Django]] sepa
+exactamente qué automatizar.
 
 ## Decisión pendiente
 Diarización (si el modelo separa hablantes) queda fuera de alcance — ya está señalada como
@@ -58,7 +58,8 @@ Decisiones resueltas:
 
 Excepciones duras encontradas: ninguna. No se cambió el transcriptor elegido (sigue siendo
 Whisper local), no se promovió nada a Canon, no se escribió código de implementación (eso es
-[[Tema #2 — Script de setup de transcripción]]).
+[[Tema #3 — Instalación de dependencias de transcripción en Django]], antes numerada Tema
+#2 — ver el reordenamiento del 2026-08-07 en [[Tema #2 — Base del proyecto Django]]).
 
 Segmentos:
 - Diseño del sistema → actualizado: `Pipeline de transcripción.md` pasó de `Idea` a

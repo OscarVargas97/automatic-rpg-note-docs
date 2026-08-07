@@ -1,6 +1,6 @@
 ---
 name: obsidian-task-solve
-description: Implementa una tarea de ObsidianRPG_Obsidian/tareas/ (vault local de Obsidian de ObsidianRPG) a partir de su ruta. Úsala cuando el usuario pase la ruta de un archivo de esa carpeta y pida resolverla, implementarla, "hazme esta tarea" o "trabajemos esta tarea". Hace una única parada al inicio, crea la rama de convención, ejecuta respetando las prohibiciones de CLAUDE.md, y al cerrar actualiza ella misma los segmentos declarados en el vault (Documentación Técnica, Diseño del Sistema, Log de decisiones) y marca segmentos_actualizados + estado antes de añadir el registro de cierre a la propia tarea.
+description: Implementa una tarea de ObsidianRPG_Obsidian/tareas/ (vault local de Obsidian de ObsidianRPG) a partir de su ruta. Úsala cuando el usuario pase la ruta de un archivo de esa carpeta y pida resolverla, implementarla, "hazme esta tarea" o "trabajemos esta tarea". Hace una única parada al inicio, crea la rama de convención, ejecuta respetando las prohibiciones de CLAUDE.md, y al cerrar actualiza ella misma los segmentos declarados en el vault (Documentación Técnica, Diseño del Sistema, Log de decisiones), marca segmentos_actualizados + estado, añade el registro de cierre a la propia tarea y, si el estado quedó en Listo, la mueve a tareas/terminadas/.
 ---
 
 # Resolver tarea del vault (ObsidianRPG_Obsidian/tareas/)
@@ -144,6 +144,10 @@ en el registro de cierre. `segmentos_actualizados` es todo o nada.
 - Cambia `estado` a `En curso` si algo del paso 5 quedó pendiente; a `Listo` únicamente si
   `definicion_de_hecho` y `segmentos_actualizados` son ambos ciertos. Nunca lo dejes en
   `Sin empezar`.
+- **Si `estado` quedó en `Listo`**, mueve el archivo de la tarea de `tareas/` a
+  `tareas/terminadas/` (mismo nombre de archivo, solo cambia la carpeta) — hazlo después de
+  escribir el registro de cierre de más abajo, no antes, para no editar un archivo a medio
+  mover. Si `estado` quedó en `En curso`, el archivo se queda donde está.
 - Resumen en el chat, en este orden:
   1. **Supuestos que tomaste** — lo primero, cada uno con su alternativa en media línea.
   2. Archivos tocados, rama creada.

@@ -21,6 +21,10 @@ __pycache__/
 venv/
 .env
 
+# Django
+*.sqlite3
+staticfiles/
+
 # Node
 node_modules/
 npm-debug.log*

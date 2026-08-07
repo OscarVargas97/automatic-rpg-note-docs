@@ -8,7 +8,8 @@ sola vez, antes de escribir contenido real, para preguntar lo que la tarea dejó
 presentar el plan en el mismo mensaje. Crea la rama de convención, ejecuta respetando las
 prohibiciones de `CLAUDE.md`, y **al cerrar actualiza ella misma los segmentos declarados**
 en el vault — Documentación Técnica, Diseño del Sistema, Log de decisiones — antes de marcar
-`segmentos_actualizados` y añadir el registro de cierre al final de la propia tarea.
+`segmentos_actualizados` y añadir el registro de cierre al final de la propia tarea. Si el
+`estado` queda en `Listo`, además mueve el archivo de la tarea a `tareas/terminadas/`.
 
 | | |
 |---|---|
@@ -16,6 +17,7 @@ en el vault — Documentación Técnica, Diseño del Sistema, Log de decisiones 
 | Paradas | una, salvo excepciones duras |
 | Git | crea la rama de convención; nunca commitea ni hace push |
 | `estado` | lo cambia al cerrar, solo si corresponde |
+| Archivo | se mueve a `tareas/terminadas/` si `estado` quedó en `Listo` |
 | Subagentes | ninguno |
 
 ## La diferencia de fondo con la versión de Jueguito

@@ -13,6 +13,7 @@ documento dentro de este mismo vault, no una estructura aparte. Ver la última s
 ```
 ObsidianRPG_Obsidian/
   tareas/                     # Backlog de este proyecto
+    terminadas/               # Tareas con estado: Listo — se mueven aquí al cerrarlas
   diseno-del-sistema/         # Especificación del sistema a construir — el entregable central
   documentacion-tecnica/      # Documentación técnica de la implementación (nace vacía)
   costos-y-presupuesto/       # Costos & presupuesto (Whisper local ⇒ probablemente casi vacío)
@@ -38,6 +39,12 @@ JSON.
 **Relaciones**: listas de wikilinks en el frontmatter (`["[[Pipeline de ingesta y
 enrutamiento]]"]`), apuntando al nombre de archivo en la carpeta correspondiente. No hay
 campos de rollup inverso: el panel de backlinks de Obsidian ya los da gratis.
+
+**Tareas terminadas**: cuando `obsidian-task-solve` cierra una tarea con `estado: Listo`, la
+mueve de `tareas/` a `tareas/terminadas/` como parte del cierre — el nombre de archivo no
+cambia, solo la carpeta. Los wikilinks `[[Tema #N — …]]` siguen resolviendo igual: Obsidian
+los resuelve por nombre de archivo en todo el vault, no por ruta. Una tarea nunca se mueve a
+mano a `terminadas/` con un `estado` distinto de `Listo`.
 
 **Frontmatter es YAML normal.** Sin script que lo genere: se arma a mano verificando cada
 campo select/array contra las tablas de esta sección antes de escribirlo.
