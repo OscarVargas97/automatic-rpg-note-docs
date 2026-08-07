@@ -16,9 +16,10 @@ HTML aparte).
 
 ## Estructura
 
-Un único proyecto Django, sin apps de negocio todavía. Vive en su propio repositorio,
-`automatic-rpg-note-src` (ver CLAUDE.md sección 2 de `automatic-rpg-note`, el repo de
-especificación) — no dentro del repo del vault:
+Un único proyecto Django, sin apps de negocio todavía. Vive en la raíz del repo
+`automatic-rpg-note` (ver CLAUDE.md sección 2) — el mismo repo gestiona código y el resto del
+proyecto; el vault de especificación (este archivo incluido) vive aparte, en `docs/`, un
+repositorio propio gitignored por el repo de código:
 
 - `config/` — paquete de settings del proyecto (`settings.py`, `urls.py`, `wsgi.py`,
   `asgi.py`). Se llama `config` y no por el nombre del sistema, para no acoplar el paquete de
@@ -35,9 +36,15 @@ especificación) — no dentro del repo del vault:
   reproducibles. Elegido porque no requiere privilegios de administrador para instalarse (a
   diferencia de `python3-pip`/`python3-venv` a nivel de sistema) y resuelve entorno virtual +
   instalación en un solo paso.
-- Atajos de comandos: un `Makefile` en la raíz de `automatic-rpg-note-src` (`make install`,
+- Atajos de comandos: un `Makefile` en la raíz de `automatic-rpg-note` (`make install`,
   `make migrate`, `make run`, `make makemigrations`, `make shell`) delega en `uv run`, para no
   tener que escribir el comando completo cada vez.
+- Uso: prototipo de un solo usuario, corrido localmente en la propia máquina — Django se
+  eligió por comodidad de desarrollo (un único framework para vistas, ORM y el orquestador),
+  no porque el sistema necesite servir a varios usuarios o desplegarse en un servidor
+  compartido. Las decisiones de stack de aquí en adelante (frontend, procesamiento en
+  background) parten de ese supuesto: optimizan por simplicidad de correr en local, no por
+  escalar.
 
 ## Fuera de alcance de esta pieza
 

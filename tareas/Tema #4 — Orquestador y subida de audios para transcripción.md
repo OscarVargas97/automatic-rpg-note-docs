@@ -74,10 +74,28 @@ MB):
   más que una subida simple (reintentos, subida por partes) o si se acepta el riesgo para el
   prototipo y se revisa después.
 
+Uso real: un solo usuario, corriendo las solicitudes HTTP en su propia máquina — no hay
+requisito de multiusuario ni de despliegue remoto (`Arquitectura del proyecto Django.md`,
+sección `## Estructura`). Eso resuelve el punto de background: **Huey con backend SQLite**
+(no Celery — evita depender de Redis/RabbitMQ como broker aparte; alcanza con un segundo
+proceso, `huey_consumer`, corriendo junto a `runserver`). Queda como supuesto asumido, no
+como decisión cerrada — revisar si al ejecutar la tarea aparece una razón concreta para otra
+cosa.
+
+**Stack de frontend**: Django + [htmx](https://htmx.org/) + [Alpine.js](https://alpinejs.dev/),
+con Tailwind CSS y una paleta/espaciado inspirados en shadcn/ui — sin los componentes React
+de shadcn en sí (shadcn es React + Radix, no aplica dentro de templates Django). Elegido
+sobre una alternativa con React + shadcn real porque esta última exige convertir Django en
+una API pura (Django Ninja/DRF) más un frontend Vite/React aparte — dos procesos de dev, un
+build de Node, una capa de API — infraestructura que no se justifica para un prototipo de un
+solo usuario en su propia máquina. htmx permite marcar la barra de progreso del job de
+transcripción (poll o SSE) sin salir del modelo de templates server-rendered de Django.
+
 ## Referencias
-- ObsidianRPG_Obsidian/diseno-del-sistema/Pipeline de transcripción.md
-- automatic-rpg-note-src (repo aparte; el proyecto Django de Tema #2 vive ahí, esta tarea
-  agrega las vistas encima — ver CLAUDE.md sección 2)
+- `docs/diseno-del-sistema/Pipeline de transcripción.md`
+- `docs/diseno-del-sistema/Arquitectura del proyecto Django.md`
+- El proyecto Django de Tema #2 vive en la raíz de este mismo repo superior
+  (`automatic-rpg-note`), esta tarea agrega las vistas encima — ver `CLAUDE.md` sección 2
 
 Origen: conversación con Oscar, 2026-08-07.
 
