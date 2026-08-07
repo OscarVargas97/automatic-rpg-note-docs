@@ -163,3 +163,21 @@ de cientos de MB — candidato a verificar en cuanto haya un audio de sesión re
 patrón que el cabo suelto de CPU fallback que cerró Tema #3).
 
 Origen: implementación con Claude, 2026-08-07.
+
+## Adenda — 2026-08-07
+
+Oscar señaló, ya revisando el resultado antes de commitear: el form de "Crear proyecto"
+único no dejaba claro cómo volver a cargar un proyecto cuyo vault ya existe en disco (caso
+real: la base de datos se resetea o se pierde, pero la carpeta del vault con sus datos
+sigue ahí). La lógica de fondo (`asegurar_estructura_vault`, idempotente) ya soportaba ese
+caso sin romper nada, pero no había ninguna señal en la UI de que fuera seguro reusarla así.
+
+Se agregó un toggle "Crear proyecto nuevo" / "Abrir proyecto existente" (mismo endpoint,
+campo `modo`): en modo `existente`, valida que la ruta ya tenga `raws/` + `campaña/` antes
+de registrarla (si no, error explícito en vez de crear una estructura vacía por accidente).
+Se agregó también rechazo de `ruta_vault` duplicada en ambos modos, caso que no estaba
+cubierto antes. Verificado con los 4 casos (existente sin estructura → error; nuevo → crea;
+duplicado → rechaza; existente con estructura real → abre). `Orquestador de
+transcripción.md` actualizado con la tabla de vistas y la verificación.
+
+Origen: implementación con Claude, 2026-08-07.

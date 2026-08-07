@@ -26,7 +26,7 @@ código (`automatic-rpg-note`, no en `docs/`).
 | Ruta | Vista | Qué hace |
 |---|---|---|
 | `/` | `proyecto_list` | Lista proyectos + form de creación. |
-| `/proyectos/crear/` | `proyecto_create` | Crea `ProyectoCampana` (POST). |
+| `/proyectos/crear/` | `proyecto_create` | Crea `ProyectoCampana` (POST). Dos modos, mismo endpoint (campo `modo`): `nuevo` (cualquier ruta, crea la estructura si falta) o `existente` (la ruta debe tener ya `raws/` + `campaña/`, si no error). Rechaza `ruta_vault` duplicada en ambos modos. |
 | `/proyectos/<id>/` | `proyecto_detail` | Detalle: form de subida + lista de trabajos. |
 | `/proyectos/<id>/trabajos/crear/` | `trabajo_create` | Guarda los audios, crea `TrabajoTranscripcion` + `AudioSubido`, encola `transcribir_trabajo` y devuelve el fragmento htmx de la fila del trabajo. |
 | `/trabajos/<id>/estado/` | `trabajo_status` | Fragmento htmx para polling (`_trabajo_row.html`). |
@@ -77,5 +77,7 @@ en el polling — se autoexcluye del polling agregando o quitando `hx-trigger` s
 Flujo completo probado de punta a punta (modelos, `call_local()` del task, y las vistas HTTP
 reales vía `Client`): crear proyecto → estructura de vault generada → subir 2 audios → job
 encolado (`pendiente`) → procesado → raw escrito con segmentos de ambos audios y offsets
-correctos → `estado = "listo"`. No probado: un audio real de 2-3 horas (se usó un WAV de
-prueba corto), ni la subida por HTTP de un archivo de cientos de MB.
+correctos → `estado = "listo"`. También probado: `modo="existente"` contra una ruta sin
+estructura (rechaza con el mensaje correcto), `modo="nuevo"` crea y registra, y el rechazo de
+`ruta_vault` duplicada. No probado: un audio real de 2-3 horas (se usó un WAV de prueba
+corto), ni la subida por HTTP de un archivo de cientos de MB.
