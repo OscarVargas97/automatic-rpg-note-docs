@@ -199,3 +199,26 @@ transcribir, duplicados, validación de ruta existente) contra el código renomb
 resultados que antes del rename.
 
 Origen: implementación con Claude, 2026-08-07.
+
+## Adenda 3 — 2026-08-07
+
+Oscar pidió un selector de carpeta "con botón que use los archivos del sistema" en vez de
+escribir la ruta a mano. Un navegador no expone la ruta absoluta real de un
+`<input type="file">` por seguridad (tampoco con la File System Access API), así que las dos
+opciones reales eran: (a) un diálogo nativo del SO disparado del lado del servidor con
+`tkinter.filedialog` (aprovechando que Django corre en la misma máquina que el navegador), o
+(b) un explorador de carpetas propio dentro de la app, navegando el filesystem del servidor
+vía htmx. Se consultó a Oscar por el riesgo real de (a): frágil bajo WSL (necesita un
+servidor X/WSLg funcionando) y fricción de threads con el dev server de Django. Eligió (b).
+
+Se agregó `browse_folders` (vista nueva) + `_folder_browser.html`: lista subcarpetas del
+path actual (oculta las que empiezan con `.`), link para subir al padre, botón "Usar esta
+carpeta" que escribe el path en el input vía `hx-on:click` inline. Botón "Elegir carpeta…"
+junto al input de `vault_path` en `projects.html`, que arranca el explorador en
+`Path.home()` o en lo que ya esté escrito en el input.
+
+Verificado: listado correcto de subcarpetas, exclusión de ocultas, navegación al padre desde
+una subcarpeta, fallback a `Path.home()` con un path inexistente. `Orquestador de
+transcripción.md` y `Orquestador y subida de audios.md` actualizados.
+
+Origen: implementación con Claude, 2026-08-07.

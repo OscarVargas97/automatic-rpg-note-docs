@@ -25,6 +25,14 @@ en modo "abrir existente" se valida que la ruta ya tenga `raws/`+`campaña/` ant
 registrarla, para no crear una estructura vacía por accidente si la base de datos se
 reseteó pero el vault en disco sigue ahí.
 
+La ruta se puede escribir a mano o elegir con un explorador de carpetas dentro de la propia
+app (botón "Elegir carpeta…"). No existe forma de que un navegador entregue una ruta
+absoluta real de un `<input type="file">` por seguridad — ni siquiera con la File System
+Access API se obtiene un path usable por el servidor. Como servidor y navegador corren en la
+misma máquina (uso local de un solo usuario), el explorador navega el filesystem del lado
+del servidor en vez de abrir un diálogo nativo del sistema operativo — evita depender de que
+haya un servidor gráfico disponible (relevante en WSL).
+
 Al crear (o abrir) un proyecto, se asegura en su `vault_path` la estructura mínima del vault
 de campaña
 (`raws/` y `campaña/{personajes,lugares,facciones,objetos,hilos-narrativos,partidas}/`, según

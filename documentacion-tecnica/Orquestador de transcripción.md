@@ -27,6 +27,7 @@ ver `CLAUDE.md` sección 5, "Idioma del código".
 | Ruta | Vista | Qué hace |
 |---|---|---|
 | `/` | `project_list` | Lista proyectos + form de creación. |
+| `/projects/browse-folders/` | `browse_folders` | Explorador de carpetas del filesystem del servidor (parámetro `path`, por defecto `Path.home()`). Devuelve el fragmento `_folder_browser.html`: subcarpetas del path actual (oculta las que empiezan con `.`), link para subir al padre, y un botón "Usar esta carpeta" que escribe el path en el input `vault_path` vía JS inline (`hx-on:click`). No hay forma de leer una ruta absoluta real desde un `<input type="file">` del navegador por seguridad — como servidor y navegador son la misma máquina (uso local de un solo usuario), se resuelve navegando el filesystem del lado del servidor en vez de con un diálogo nativo del SO. |
 | `/projects/create/` | `project_create` | Crea `CampaignProject` (POST). Dos modos, mismo endpoint (campo `mode`): `new` (cualquier ruta, crea la estructura si falta) o `existing` (la ruta debe tener ya `raws/` + `campaña/`, si no error). Rechaza `vault_path` duplicado en ambos modos. |
 | `/projects/<id>/` | `project_detail` | Detalle: form de subida + lista de trabajos. |
 | `/projects/<id>/jobs/create/` | `job_create` | Guarda los audios, crea `TranscriptionJob` + `UploadedAudio`, encola `transcribe_job` y devuelve el fragmento htmx de la fila del trabajo. |
@@ -71,7 +72,8 @@ segmentos en vez de concatenar audio crudo.
 shadcn/ui, htmx y Alpine.js vía CDN, sin build de Node), `projects.html`,
 `project_detail.html`, `_job_row.html` (fragmento reusado en la creación del trabajo y
 en el polling — se autoexcluye del polling agregando o quitando `hx-trigger` según el
-`status`). Los identificadores del template (nombres de variable, `id`, atributos `name` de
+`status`), `_folder_browser.html` (explorador de carpetas, ver tabla de vistas arriba). Los
+identificadores del template (nombres de variable, `id`, atributos `name` de
 los campos del form) están en inglés; el texto que el usuario lee (labels, botones,
 mensajes) está en español.
 
@@ -82,6 +84,8 @@ reales vía `Client`), repetido después del rename a inglés: crear proyecto �
 vault generada → subir 2 audios → job encolado (`pending`) → procesado → raw escrito con
 segmentos de ambos audios y offsets correctos → `status = "done"`. También probado:
 `mode="existing"` contra una ruta sin estructura (rechaza con el mensaje correcto),
-`mode="new"` crea y registra, y el rechazo de `vault_path` duplicado. No probado: un audio
-real de 2-3 horas (se usó un WAV de prueba corto), ni la subida por HTTP de un archivo de
-cientos de MB.
+`mode="new"` crea y registra, y el rechazo de `vault_path` duplicado. También probado
+`browse_folders`: listado de subcarpetas, exclusión de ocultas, link "subir" al padre desde
+una subcarpeta, y fallback a `Path.home()` si el `path` pedido no existe. No probado: un
+audio real de 2-3 horas (se usó un WAV de prueba corto), ni la subida por HTTP de un archivo
+de cientos de MB.
