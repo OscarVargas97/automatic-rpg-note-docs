@@ -80,3 +80,12 @@ GPU con CUDA disponible) — no bloquea el cierre porque el código ya cae a CPU
 real sin GPU.
 
 Origen: implementación con Claude, 2026-08-07.
+
+## Verificación adicional — 2026-08-07
+
+Se probó el repliegue a CPU ocultándole CUDA al proceso (`CUDA_VISIBLE_DEVICES=""` sobre
+`manage.py check_transcription`) en vez de esperar una máquina real sin GPU. Cayó
+correctamente a `CPU (int8)`, sin cambios de código. Cabo suelto cerrado — no se abre tarea
+nueva para esto.
+
+Origen: verificación con Claude, 2026-08-07.
