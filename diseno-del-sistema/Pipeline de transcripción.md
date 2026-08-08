@@ -45,10 +45,12 @@ como opción si la calidad de `small` no alcanza en el piloto.
   herramienta de captura (fuera de alcance de esta pieza, ver `Pipeline de ingesta y
   enrutamiento.md`) graba en otro formato o frecuencia, hace falta un paso de conversión
   antes de transcribir.
-- **Salida**: texto plano por segmento, con marca de tiempo de inicio y fin de cada uno. El
-  paso 3 del pipeline de ingesta (lectura completa por Claude) puede trabajar sobre el texto
-  plano sin necesitar los timestamps, pero conviene conservarlos en el archivo intermedio por
-  si una tarea futura los necesita.
+- **Salida**: texto plano por segmento, con marca de tiempo de inicio y fin de cada uno —
+  `[inicio - fin] texto`. El paso 3 del pipeline de ingesta (lectura completa por Claude)
+  puede trabajar sobre el texto plano sin necesitar los timestamps, pero conviene
+  conservarlos en el archivo intermedio por si una tarea futura los necesita. Si el usuario
+  indicó número de hablantes al subir el audio (ver `## Diarización de hablantes`), cada
+  línea antepone una etiqueta genérica: `[inicio - fin] SPEAKER_00: texto`.
 
 ## Requisitos para correr una transcripción
 
@@ -87,8 +89,63 @@ La transcripción cruda (raw) se guarda **siempre** en `raws/`, en la raíz del 
 nunca, sin importar si después hay o no un post-proceso: el raw es el respaldo si algo más
 adelante en el pipeline se equivoca.
 
+## Diarización de hablantes (evaluado en Tema #5, implementado en Tema #6)
+
+Investigado en [[Tema #5 — Investigar diarización de hablantes para distinguir voces
+distintas]] e implementado en [[Tema #6 — Implementar diarización de hablantes en el
+pipeline de transcripción]]. La pregunta de origen (`Pipeline de ingesta y enrutamiento.md`)
+es si el pipeline puede separar voces distintas — no todavía quién de ellas es el máster,
+eso sigue fuera de alcance.
+
+**Cómo se activa**: es opcional por trabajo de transcripción, no automático. Al subir el
+audio, el usuario puede indicar cuántos hablantes distintos hay; si lo deja vacío, el job se
+transcribe igual que antes de esta pieza, sin diarización — así los audios de un solo
+hablante (o donde no importa distinguir voces) no pagan el costo extra de cómputo.
+
+**Cómo funciona**: por cada audio, Silero VAD marca en qué tramos hay voz; esos tramos se
+parten en ventanas de ~1.5s (lo mínimo para que SpeechBrain ECAPA-TDNN saque una huella de
+voz estable); las huellas se agrupan con `AgglomerativeClustering` de scikit-learn en tantos
+grupos como hablantes se pidieron; cada grupo se etiqueta `SPEAKER_00`, `SPEAKER_01`, etc. Un
+segmento de Whisper hereda la etiqueta de la ventana de diarización con más solapamiento de
+tiempo — si no hay ninguna (VAD no detectó voz en ese tramo), el segmento queda sin etiqueta.
+
+**Candidata descartada**: `pyannote.audio`, la variante más citada para diarización con
+Whisper. Su modelo (`pyannote/speaker-diarization-3.1`) es un repo "gated" en HuggingFace —
+exige cuenta, aceptar términos y un token de autenticación. Confirmado empíricamente en la
+máquina de referencia: sin token, falla con `GatedRepoError 401`. Se descarta porque el
+proyecto necesita una solución sin servicios externos ni credenciales por máquina, y la
+inferencia local no cambia eso — el bloqueo está en la descarga inicial del modelo.
+
+**Candidata viable, sin autenticación**: un pipeline propio de VAD + embeddings de hablante +
+clustering. Dos piezas se probaron en la máquina de referencia (RTX 3070) y cargaron y
+corrieron en GPU sin ningún login ni token:
+
+- **Silero VAD** (detección de actividad de voz) — pesos incluidos en el propio paquete pip,
+  ~9 MB, no llega a pedirle nada a HuggingFace.
+- **SpeechBrain ECAPA-TDNN** (`speechbrain/spkrec-ecapa-voxceleb`, embeddings de hablante) —
+  se descarga de HuggingFace sin autenticación (solo una advertencia de límite de tasa por no
+  usar token, no un bloqueo).
+
+Estos dos resuelven "dónde hay voz" y la "huella" de cada segmento de voz; agrupar esas
+huellas por hablante (clustering, ej. agglomerative clustering de scikit-learn) es
+integración propia — a diferencia de pyannote, que trae eso resuelto en un solo `Pipeline`.
+Se evaluó `simple-diarizer` (PyPI) como wrapper ya armado sobre esta misma base, pero su
+último release es de diciembre de 2022 — sin mantenimiento activo, mejor escribir la
+integración directo sobre Silero + SpeechBrain que depender de un wrapper abandonado.
+
+**Costo de adoptar esta ruta**: introduce PyTorch como dependencia nueva. El stack actual de
+transcripción usa `ctranslate2` (vía faster-whisper), no PyTorch — el `.venv` del proyecto
+pesa ~426 MB sin él. Instalar SpeechBrain + Silero VAD suma varios GB, sobre todo el runtime
+de CUDA que PyTorch trae consigo.
+
+**Sin verificar**: la calidad real de separación de voces con audio de una sesión de mesa —
+Tema #6 tampoco tuvo un audio con más de un hablante para probar. El código corre y produce
+etiquetas, pero si esas etiquetas corresponden de verdad a hablantes distintos queda como
+riesgo conocido hasta la primera vez que se use con audio real de mesa.
+
 ## Fuera de alcance de esta pieza
 
-Diarización (separar quién habló) — ya señalada como abierta en `Pipeline de ingesta y
-enrutamiento.md`. faster-whisper no la resuelve de fábrica; existe integración opcional con
-`pyannote` que queda como candidata a investigación aparte si hace falta.
+Identificar cuál hablante es el máster (mapear una etiqueta genérica a una identidad) — el
+sistema solo distingue voces, no sabe cuál es cuál. Candidata a tarea aparte cuando el
+pipeline de ingesta con Claude (`Pipeline de ingesta y enrutamiento.md`) exista y pueda
+apoyar esa inferencia.

@@ -73,6 +73,14 @@ el raw y marcar el trabajo listo, señalando dónde engancharía la ingesta con 
 (`Pipeline de ingesta y enrutamiento.md`) el día que exista esa tarea. Hoy el pipeline
 implementado termina en el raw — no hay clasificación automática todavía.
 
+## Diarización de hablantes (Tema #6)
+
+Al subir audio(s), el usuario puede indicar opcionalmente cuántos hablantes distintos hay
+(campo "Número de hablantes", vacío por defecto). Si lo indica, el raw resultante marca cada
+línea con una etiqueta genérica de voz (`SPEAKER_00`, `SPEAKER_01`, …) — ver el detalle del
+mecanismo en `Pipeline de transcripción.md`, sección "Diarización de hablantes". Si lo deja
+vacío, la subida y transcripción funcionan exactamente igual que antes de esta pieza.
+
 ## Fuera de alcance de esta pieza
 
 - Conversión de formato de audio antes de transcribir: faster-whisper decodifica varios
@@ -80,4 +88,5 @@ implementado termina en el raw — no hay clasificación automática todavía.
   conversión aparte. No verificado contra todos los formatos posibles de grabación.
 - Subida robusta (reintentos, subida por partes) ante un corte de red a mitad de una subida de
   300+ MB: se acepta el riesgo para el prototipo, como la propia tarea dejó abierto.
-- Diarización — sigue fuera de alcance, igual que en `Pipeline de transcripción.md`.
+- Identificar cuál hablante es el máster — la diarización solo distingue voces, no sabe cuál
+  es cuál (ver `Pipeline de transcripción.md`).

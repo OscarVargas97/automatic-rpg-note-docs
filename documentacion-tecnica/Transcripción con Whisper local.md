@@ -80,8 +80,35 @@ El módulo acepta un solo audio o varios (concatenados en orden, para sesiones g
 más de un archivo). En ambos casos, el raw resultante se guarda siempre en `raws/`, en la
 raíz del vault destino — nunca en un directorio temporal que se pueda perder.
 
-## Fuera de alcance
+## Diarización (implementado en Tema #6)
 
-Diarización (separar quién habló): no viene de fábrica en faster-whisper. Existe integración
-opcional con `pyannote` — sin investigar todavía, candidata a tarea aparte si el piloto en
-mesa la necesita.
+No viene de fábrica en faster-whisper. Evaluado en [[Tema #5 — Investigar diarización de
+hablantes para distinguir voces distintas]] e implementado en `core/diarization.py` por
+[[Tema #6 — Implementar diarización de hablantes en el pipeline de transcripción]].
+
+- `pyannote.audio` (candidata más citada) sigue descartada — requiere un token de
+  HuggingFace, confirmado con `GatedRepoError 401` sin él.
+- La implementación real usa `silero-vad` (detección de actividad de voz) y `speechbrain`
+  (modelo `speechbrain/spkrec-ecapa-voxceleb`, embeddings de hablante) — ninguno pide login.
+  `core.diarization.load_diarization_models()` los carga; `core.diarization.diarize(path,
+  num_speakers, vad_model, embedding_model)` corre VAD → parte los tramos de voz en ventanas
+  de ~1.5s → saca un embedding por ventana → agrupa con `AgglomerativeClustering`
+  (`scikit-learn`) en `num_speakers` grupos → devuelve `(inicio, fin, "SPEAKER_NN")` por
+  ventana.
+- Los pesos de ambos modelos se cachean en `DIARIZATION_MODELS_DIR`
+  (`config/settings.py` → `models/diarization/`, mismo patrón que `MEDIA_ROOT`, ya
+  gitignoreado).
+- Dependencias nuevas en `pyproject.toml`: `speechbrain`, `silero-vad`, `scikit-learn` (traen
+  PyTorch transitivamente). `faster-whisper` sigue sobre `ctranslate2`, sin PyTorch, así que
+  esto solo se paga cuando un job pide diarización — la importación de `core.diarization` es
+  perezosa dentro de `transcribe_job` (ver [[Orquestador de transcripción]]).
+- **Verificado de punta a punta** (`orchestrator.tasks.transcribe_job`, sin pasar por Huey —
+  `.call_local()`): un job sin `speaker_count` y otro con `speaker_count=2`, ambos contra un
+  WAV de ruido sintético (no habla real — no había un audio con más de un hablante
+  disponible), terminan en `status = "done"` sin excepciones. Silero VAD no detectó voz en
+  ese ruido (correcto, no es habla), así que ninguno de los dos rawes tiene etiquetas — pero
+  confirma que el camino con diarización activada no rompe nada, ni cuando VAD no encuentra
+  nada que diarizar.
+- **Sin verificar**: si las etiquetas `SPEAKER_NN` corresponden de verdad a hablantes
+  distintos con audio real — sigue sin haber un audio de prueba con más de una voz. Riesgo
+  conocido hasta el primer uso con audio real de mesa.
